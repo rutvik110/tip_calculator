@@ -103,19 +103,26 @@ class _MyHomePageState extends State<MyHomePage> {
     totalTip = 0;
     totalBill = 0;
     tipPercentageController = TextEditingController(text: '$tipPercentage');
-    billAmountController = TextEditingController(text: '0');
+    billAmountController = TextEditingController(text: '$billAmount');
 
     errorText = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final moneyTextStyle = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: Theme.of(context).textTheme.titleMedium!.fontSize,
+    );
+    final titleTextStyle = TextStyle(
+      fontSize: Theme.of(context).textTheme.titleMedium!.fontSize,
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tip Calculator'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -134,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             const SizedBox(
-              height: 10,
+              height: 20,
             ),
             SizedBox(
               height: 50,
@@ -143,8 +150,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   label: const Text('Tip Percentage'),
-                  suffixIcon: const Icon(
+                  suffixIcon: Icon(
                     Icons.percent,
+                    color: errorText != null ? Colors.red : null,
                   ),
                   errorText: errorText,
                 ),
@@ -154,15 +162,19 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             // show total tip and total bill
-            const SizedBox(
-              height: 20,
+            const Divider(
+              height: 30,
             ),
 
             Row(
               children: [
-                const Text('Total Tip : '),
+                Text(
+                  'Total Tip: ',
+                  style: titleTextStyle,
+                ),
                 Text(
                   errorText != null ? 'N/A' : formatAmount(totalTip),
+                  style: moneyTextStyle,
                 ),
               ],
             ),
@@ -171,9 +183,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Row(
               children: [
-                const Text('Total Bill : '),
+                Text(
+                  'Total Bill: ',
+                  style: titleTextStyle,
+                ),
                 Text(
                   formatAmount(totalBill),
+                  style: moneyTextStyle,
                 ),
               ],
             ),
