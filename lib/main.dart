@@ -35,40 +35,55 @@ class _MyHomePageState extends State<MyHomePage> {
   late double totalBill;
   late TextEditingController billAmountController;
 
-  late String? errorText;
+  late String? billAmountErrorText;
+  late String? tipPercentageErrorText;
 
   void onBillAmountChanged(String value) {
-    setState(() {
-      if (value.isNotEmpty) {
-        billAmount = double.tryParse(value) ?? 0;
-      } else {
-        billAmount = 0;
-      }
+    if (value.isNotEmpty) {
+      final amount = double.tryParse(value);
+      setState(() {
+        if (amount != null) {
+          billAmount = amount;
+          billAmountErrorText = null;
+        } else {
+          billAmount = 0;
+          billAmountErrorText = 'Invalid bill amount';
+        }
 
-      calculateTotalTipAndBill();
-    });
+        calculateTotalTipAndBill();
+      });
+    } else {
+      setState(() {
+        billAmount = 0;
+        billAmountErrorText = 'Requires bill amount';
+        calculateTotalTipAndBill();
+      });
+    }
   }
 
   void onTipPercentageChanged(String value) {
     if (value.isNotEmpty) {
-      final percentValue = double.tryParse(value) ?? 0;
-      if (percentValue > 100) {
-        if (errorText == null) {
-          errorText = 'Can not be greater than 100%';
+      final percentage = double.tryParse(value);
+      if (percentage != null) {
+        if (percentage > 100) {
+          tipPercentageErrorText = 'Can not be greater than 100%';
           tipPercentage = 0;
+          calculateTotalTipAndBill();
+          setState(() {});
+        } else {
+          tipPercentageErrorText = null;
+          tipPercentage = percentage;
           calculateTotalTipAndBill();
           setState(() {});
         }
       } else {
-        if (errorText != null) {
-          errorText = null;
-        }
-
-        tipPercentage = percentValue;
+        tipPercentageErrorText = 'Invalid tip percentage';
+        tipPercentage = 0;
         calculateTotalTipAndBill();
         setState(() {});
       }
     } else {
+      tipPercentageErrorText = 'Requires tip percentage';
       tipPercentage = 0;
       calculateTotalTipAndBill();
       setState(() {});
@@ -105,7 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
     tipPercentageController = TextEditingController(text: '$tipPercentage');
     billAmountController = TextEditingController(text: '$billAmount');
 
-    errorText = null;
+    billAmountErrorText = null;
+    tipPercentageErrorText = null;
   }
 
   @override
@@ -130,10 +146,14 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 50,
               child: TextField(
                 controller: billAmountController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  label: Text('Bill Amount'),
-                  suffixIcon: Icon(Icons.attach_money),
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  label: const Text('Bill Amount'),
+                  suffixIcon: Icon(
+                    Icons.attach_money,
+                    color: billAmountErrorText != null ? Colors.red : null,
+                  ),
+                  errorText: billAmountErrorText,
                 ),
                 onChanged: onBillAmountChanged,
                 keyboardType:
@@ -152,9 +172,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   label: const Text('Tip Percentage'),
                   suffixIcon: Icon(
                     Icons.percent,
-                    color: errorText != null ? Colors.red : null,
+                    color: tipPercentageErrorText != null ? Colors.red : null,
                   ),
-                  errorText: errorText,
+                  errorText: tipPercentageErrorText,
                 ),
                 onChanged: onTipPercentageChanged,
                 keyboardType:
@@ -173,7 +193,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: titleTextStyle,
                 ),
                 Text(
-                  errorText != null ? 'N/A' : formatAmount(totalTip),
+                  tipPercentageErrorText != null
+                      ? 'N/A'
+                      : formatAmount(totalTip),
                   style: moneyTextStyle,
                 ),
               ],
@@ -188,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: titleTextStyle,
                 ),
                 Text(
-                  formatAmount(totalBill),
+                  billAmountErrorText != null ? 'N/A' : formatAmount(totalBill),
                   style: moneyTextStyle,
                 ),
               ],
