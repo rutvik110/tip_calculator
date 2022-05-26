@@ -147,6 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: TextField(
                 controller: billAmountController,
                 decoration: InputDecoration(
+                  // hintText: 'Add Bill Amount',
                   border: const OutlineInputBorder(),
                   label: const Text('Bill Amount'),
                   suffixIcon: Icon(
@@ -168,6 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: TextField(
                 controller: tipPercentageController,
                 decoration: InputDecoration(
+                  // hintText: 'Add Tip Percentage',
                   border: const OutlineInputBorder(),
                   label: const Text('Tip Percentage'),
                   suffixIcon: Icon(
@@ -193,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: titleTextStyle,
                 ),
                 Text(
-                  tipPercentageErrorText != null
+                  tipPercentageErrorText != null || billAmountErrorText != null
                       ? 'N/A'
                       : formatAmount(totalTip),
                   style: moneyTextStyle,
@@ -210,7 +212,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: titleTextStyle,
                 ),
                 Text(
-                  billAmountErrorText != null ? 'N/A' : formatAmount(totalBill),
+                  tipPercentageErrorText != null || billAmountErrorText != null
+                      ? 'N/A'
+                      : formatAmount(totalBill),
                   style: moneyTextStyle,
                 ),
               ],
