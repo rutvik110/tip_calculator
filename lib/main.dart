@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,57 +11,174 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Tip Calculator',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  late TextEditingController tipPercentageController;
+  late double billAmount;
+  late double tipPercentage;
+  late double totalTip;
+  late double totalBill;
+  late TextEditingController billAmountController;
 
-  void _incrementCounter() {
+  late String? errorText;
+
+  void onBillAmountChanged(String value) {
     setState(() {
-      _counter++;
+      if (value.isNotEmpty) {
+        billAmount = double.tryParse(value) ?? 0;
+      } else {
+        billAmount = 0;
+      }
+
+      calculateTotalTipAndBill();
     });
+  }
+
+  void onTipPercentageChanged(String value) {
+    if (value.isNotEmpty) {
+      final percentValue = double.tryParse(value) ?? 0;
+      if (percentValue > 100) {
+        if (errorText == null) {
+          errorText = 'Can not be greater than 100%';
+          tipPercentage = 0;
+          calculateTotalTipAndBill();
+          setState(() {});
+        }
+      } else {
+        if (errorText != null) {
+          errorText = null;
+        }
+
+        tipPercentage = percentValue;
+        calculateTotalTipAndBill();
+        setState(() {});
+      }
+    } else {
+      tipPercentage = 0;
+      calculateTotalTipAndBill();
+      setState(() {});
+    }
+  }
+
+  void calculateTotalTip() {
+    totalTip = billAmount * (tipPercentage / 100);
+    totalTip = double.parse(totalTip.toStringAsFixed(2));
+  }
+
+  void calculateTotalBill() {
+    totalBill = billAmount + totalTip;
+    totalBill = double.parse(totalBill.toStringAsFixed(2));
+  }
+
+  void calculateTotalTipAndBill() {
+    calculateTotalTip();
+    calculateTotalBill();
+  }
+
+  String formatAmount(double amount) {
+    return '${NumberFormat("#,##0.00", "en_US").format(amount)}\$';
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    billAmount = 0;
+    tipPercentage = 15;
+    totalTip = 0;
+    totalBill = 0;
+    tipPercentageController = TextEditingController(text: '$tipPercentage');
+    billAmountController = TextEditingController(text: '0');
+
+    errorText = null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('Tip Calculator'),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(10),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 50,
+              child: TextField(
+                controller: billAmountController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  label: Text('Bill Amount'),
+                  suffixIcon: Icon(Icons.attach_money),
+                ),
+                onChanged: onBillAmountChanged,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 50,
+              child: TextField(
+                controller: tipPercentageController,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  label: const Text('Tip Percentage'),
+                  suffixIcon: const Icon(
+                    Icons.percent,
+                  ),
+                  errorText: errorText,
+                ),
+                onChanged: onTipPercentageChanged,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+              ),
+            ),
+            // show total tip and total bill
+            const SizedBox(
+              height: 20,
+            ),
+
+            Row(
+              children: [
+                const Text('Total Tip : '),
+                Text(
+                  errorText != null ? 'N/A' : formatAmount(totalTip),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              children: [
+                const Text('Total Bill : '),
+                Text(
+                  formatAmount(totalBill),
+                ),
+              ],
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
