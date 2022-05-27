@@ -41,24 +41,22 @@ class _MyHomePageState extends State<MyHomePage> {
   void onBillAmountChanged(String value) {
     if (value.isNotEmpty) {
       final amount = double.tryParse(value);
-      setState(() {
-        if (amount != null) {
-          billAmount = amount;
-          billAmountErrorText = null;
-        } else {
-          billAmount = 0;
-          billAmountErrorText = 'Invalid bill amount';
-        }
 
-        calculateTotalTipAndBill();
-      });
-    } else {
-      setState(() {
+      if (amount != null) {
+        billAmount = amount;
+        billAmountErrorText = null;
+      } else {
         billAmount = 0;
-        billAmountErrorText = 'Requires bill amount';
-        calculateTotalTipAndBill();
-      });
+        billAmountErrorText = 'Invalid bill amount';
+      }
+    } else {
+      billAmount = 0;
+      billAmountErrorText = 'Requires bill amount';
     }
+
+    setState(() {
+      calculateTotalTipAndBill();
+    });
   }
 
   void onTipPercentageChanged(String value) {
@@ -68,26 +66,21 @@ class _MyHomePageState extends State<MyHomePage> {
         if (percentage > 100) {
           tipPercentageErrorText = 'Can not be greater than 100%';
           tipPercentage = 0;
-          calculateTotalTipAndBill();
-          setState(() {});
         } else {
           tipPercentageErrorText = null;
           tipPercentage = percentage;
-          calculateTotalTipAndBill();
-          setState(() {});
         }
       } else {
         tipPercentageErrorText = 'Invalid tip percentage';
         tipPercentage = 0;
-        calculateTotalTipAndBill();
-        setState(() {});
       }
     } else {
       tipPercentageErrorText = 'Requires tip percentage';
       tipPercentage = 0;
-      calculateTotalTipAndBill();
-      setState(() {});
     }
+    setState(() {
+      calculateTotalTipAndBill();
+    });
   }
 
   void calculateTotalTip() {
