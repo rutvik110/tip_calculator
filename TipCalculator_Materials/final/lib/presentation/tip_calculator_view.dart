@@ -14,7 +14,7 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
   late TextEditingController tipPercentageController;
   late double billAmount;
   late double tipPercentage;
-  late double totalTip;
+  late double tip;
   late double totalBill;
   late TextEditingController billAmountController;
 
@@ -38,7 +38,7 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
     }
 
     setState(() {
-      calculateTotalTipAndBill();
+      calculateTipAndTotalBill();
     });
   }
 
@@ -62,23 +62,23 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
       tipPercentage = 0;
     }
     setState(() {
-      calculateTotalTipAndBill();
+      calculateTipAndTotalBill();
     });
   }
 
-  void calculateTotalTip() {
-    totalTip = billAmount * (tipPercentage / 100);
-    final roundedTotalTip = totalTip.toStringAsFixed(2);
-    totalTip = double.parse(roundedTotalTip);
+  void calculateTip() {
+    tip = billAmount * (tipPercentage / 100);
+    final roundedTip = tip.toStringAsFixed(2);
+    tip = double.parse(roundedTip);
   }
 
   void calculateTotalBill() {
-    totalBill = billAmount + totalTip;
+    totalBill = billAmount + tip;
     totalBill = double.parse(totalBill.toStringAsFixed(2));
   }
 
-  void calculateTotalTipAndBill() {
-    calculateTotalTip();
+  void calculateTipAndTotalBill() {
+    calculateTip();
     calculateTotalBill();
   }
 
@@ -88,7 +88,7 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
     super.initState();
     billAmount = 0;
     tipPercentage = 15;
-    totalTip = 0;
+    tip = 0;
     totalBill = 0;
     billAmountErrorText = null;
     tipPercentageErrorText = null;
@@ -148,8 +148,8 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
               height: 30,
             ),
             TotalRow(
-              title: 'Total Tip',
-              amount: totalTip,
+              title: 'Tip',
+              amount: tip,
               tipPercentageErrorText: tipPercentageErrorText,
               billAmountErrorText: billAmountErrorText,
             ),
