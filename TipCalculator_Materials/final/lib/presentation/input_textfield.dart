@@ -4,6 +4,7 @@ class InputTextField extends StatelessWidget {
   const InputTextField({
     Key? key,
     required this.controller,
+    required this.decoration,
     required this.label,
     required this.iconData,
     required this.errorText,
@@ -11,6 +12,7 @@ class InputTextField extends StatelessWidget {
   }) : super(key: key);
 
   final TextEditingController controller;
+  final InputDecoration decoration;
   final String? errorText;
   final IconData iconData;
   final void Function(String value) onChanged;
@@ -20,16 +22,7 @@ class InputTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      decoration: InputDecoration(
-        // hintText: 'Add Bill Amount',
-        border: const OutlineInputBorder(),
-        label: Text(label),
-        suffixIcon: Icon(
-          iconData,
-          color: errorText != null ? Colors.red : null,
-        ),
-        errorText: errorText,
-      ),
+      decoration: decoration,
       onChanged: onChanged,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
     );

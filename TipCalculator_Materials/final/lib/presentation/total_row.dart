@@ -17,13 +17,16 @@ class TotalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moneyTextStyle = TextStyle(
+    const titleTextStyle = TextStyle(
+      fontSize: 16,
+    );
+
+    const amountTextStyle = TextStyle(
+      fontSize: 16,
       fontWeight: FontWeight.bold,
-      fontSize: Theme.of(context).textTheme.titleMedium!.fontSize,
+      decoration: TextDecoration.underline,
     );
-    final titleTextStyle = TextStyle(
-      fontSize: Theme.of(context).textTheme.titleMedium!.fontSize,
-    );
+
     return Row(
       children: [
         Text(
@@ -31,10 +34,8 @@ class TotalRow extends StatelessWidget {
           style: titleTextStyle,
         ),
         Text(
-          tipPercentageErrorText != null || billAmountErrorText != null
-              ? 'N/A'
-              : formatAmount(amount),
-          style: moneyTextStyle,
+          formatAmount(amount),
+          style: amountTextStyle,
         ),
       ],
     );

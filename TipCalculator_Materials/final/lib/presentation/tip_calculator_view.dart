@@ -26,15 +26,15 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
       final amount = double.tryParse(value);
 
       if (amount != null) {
-        billAmount = amount;
         billAmountErrorText = null;
+        billAmount = amount;
       } else {
-        billAmount = 0;
         billAmountErrorText = 'Invalid bill amount';
+        billAmount = 0;
       }
     } else {
-      billAmount = 0;
       billAmountErrorText = 'Requires bill amount';
+      billAmount = 0;
     }
 
     setState(() {
@@ -46,12 +46,12 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
     if (value.isNotEmpty) {
       final percentage = double.tryParse(value);
       if (percentage != null) {
-        if (percentage > 100) {
-          tipPercentageErrorText = 'Can not be greater than 100%';
-          tipPercentage = 0;
-        } else {
+        if (percentage <= 100) {
           tipPercentageErrorText = null;
           tipPercentage = percentage;
+        } else {
+          tipPercentageErrorText = 'Can not be greater than 100%';
+          tipPercentage = 0;
         }
       } else {
         tipPercentageErrorText = 'Invalid tip percentage';
@@ -68,7 +68,8 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
 
   void calculateTotalTip() {
     totalTip = billAmount * (tipPercentage / 100);
-    totalTip = double.parse(totalTip.toStringAsFixed(2));
+    final roundedTotalTip = totalTip.toStringAsFixed(2);
+    totalTip = double.parse(roundedTotalTip);
   }
 
   void calculateTotalBill() {
@@ -89,15 +90,32 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
     tipPercentage = 15;
     totalTip = 0;
     totalBill = 0;
-    tipPercentageController = TextEditingController(text: '$tipPercentage');
-    billAmountController = TextEditingController(text: '$billAmount');
-
     billAmountErrorText = null;
     tipPercentageErrorText = null;
+    tipPercentageController = TextEditingController(text: '$tipPercentage');
+    billAmountController = TextEditingController(text: '$billAmount');
   }
 
   @override
   Widget build(BuildContext context) {
+    final billAmountTextFieldDecoration = InputDecoration(
+      label: const Text('Bill Amount'),
+      suffixIcon: const Icon(
+        Icons.attach_money,
+      ),
+      border: const OutlineInputBorder(),
+      errorText: billAmountErrorText,
+    );
+
+    final tipPercentageTextFieldDecoration = InputDecoration(
+      label: const Text('Tip Percentage'),
+      suffixIcon: const Icon(
+        Icons.percent,
+      ),
+      border: const OutlineInputBorder(),
+      errorText: tipPercentageErrorText,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tip Calculator'),
@@ -107,33 +125,28 @@ class _TipCalculatorViewState extends State<TipCalculatorView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 50,
-              child: InputTextField(
-                controller: billAmountController,
-                label: 'Bill Amount',
-                errorText: billAmountErrorText,
-                iconData: Icons.attach_money,
-                onChanged: onBillAmountChanged,
-              ),
+            InputTextField(
+              controller: billAmountController,
+              decoration: billAmountTextFieldDecoration,
+              label: 'Bill Amount',
+              errorText: billAmountErrorText,
+              iconData: Icons.attach_money,
+              onChanged: onBillAmountChanged,
             ),
             const SizedBox(
               height: 20,
             ),
-            SizedBox(
-                height: 50,
-                child: InputTextField(
-                  controller: tipPercentageController,
-                  label: 'Tip Percentage',
-                  errorText: tipPercentageErrorText,
-                  iconData: Icons.percent,
-                  onChanged: onTipPercentageChanged,
-                )),
-            // show total tip and total bill
+            InputTextField(
+              controller: tipPercentageController,
+              decoration: tipPercentageTextFieldDecoration,
+              label: 'Tip Percentage',
+              errorText: tipPercentageErrorText,
+              iconData: Icons.percent,
+              onChanged: onTipPercentageChanged,
+            ),
             const Divider(
               height: 30,
             ),
-
             TotalRow(
               title: 'Total Tip',
               amount: totalTip,
